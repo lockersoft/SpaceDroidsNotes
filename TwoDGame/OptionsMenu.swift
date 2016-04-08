@@ -27,9 +27,9 @@ class OptionsMenu: SKScene {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
             let location = touch.locationInNode(self)
-            print( nodeAtPoint(location).name )
+            print( nodeAtPoint(location).name, terminator: "" )
             if( nodeAtPoint(location).name == backButton!.name){
-                print("Back Button pressed")
+                print("Back Button pressed", terminator: "")
                 
                 let scene = MainMenu(fileNamed: "MainMenu")
                 scene?.scaleMode = .AspectFill

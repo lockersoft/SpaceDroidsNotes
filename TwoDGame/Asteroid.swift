@@ -10,7 +10,6 @@ import SpriteKit
 
 class Asteroid: SKSpriteNode {
   
-  
   var textureAtlas = SKTextureAtlas()
   var playerAnimation = [SKTexture]()
   var animatePlayerAction = SKAction()
@@ -30,7 +29,7 @@ class Asteroid: SKSpriteNode {
     initializeAsteroid()
     animateAsteroid()
   }
-
+  
   required init?(coder aDecoder: NSCoder) {
     super.init( coder: aDecoder )
   }
@@ -38,13 +37,14 @@ class Asteroid: SKSpriteNode {
   func initializeAsteroid(){
     self.position = pos
     textureAtlas = SKTextureAtlas(named: "largeAsteroid.Atlas")
-  
+    self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+    
     for( var i=0;i<=15;i++) {
       let name = "aLarge\(i)"
-      print( name );
+      print( name, terminator: "" );
       playerAnimation.append(SKTexture(imageNamed: name))
     }
-  
+    
     animatePlayerAction = SKAction.animateWithTextures(playerAnimation,
       timePerFrame: 0.08, resize: true, restore: true )
     
