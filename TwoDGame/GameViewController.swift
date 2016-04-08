@@ -11,25 +11,31 @@ import SpriteKit
 
 class GameViewController: UIViewController {
 
+  
+  var scene = MainMenu(fileNamed: "MainMenu")
+  
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let scene = GameScene(fileNamed:"GameScene") {
+        if let scene = MainMenu(fileNamed:"MainMenu") {
             // Configure the view.
             let skView = self.view as! SKView
             skView.showsFPS = true
             skView.showsNodeCount = true
+            skView.showsPhysics = true
             
             /* Sprite Kit applies additional optimizations to improve rendering performance */
             skView.ignoresSiblingOrder = true
             
             /* Set the scale mode to scale to fit the window */
             scene.scaleMode = .AspectFill
-            
+                    
             skView.presentScene(scene)
         }
     }
 
+  
+  
     override func shouldAutorotate() -> Bool {
         return true
     }
