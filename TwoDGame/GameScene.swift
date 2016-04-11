@@ -101,6 +101,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let ninetyDegreesInRadians = CGFloat(90.0 * M_PI / 180.0)
     let phaserShot = SKSpriteNode(imageNamed: "phaserShot")
+    phaserShot.name = "phaserShot"
     phaserShot.zRotation = rocket!.zRotation
     phaserShot.position = CGPointMake(rocket!.position.x, rocket!.position.y)
     
@@ -137,26 +138,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     self.addChild(asteroid)
   }
   
+  /// 
+  // UPDATE
+  
   override func update(currentTime: NSTimeInterval){
     for asteroid in asteroids {
       asteroid.move()
+    }
+    // Find all phaserShots and remove if off screen
+    for child in self.children {
+      if child.name == "phaserShot" {
+        if let child = child as? SKSpriteNode {
+          if( child.position.x > 1000 || child.position.x < -1000){
+            child.removeFromParent()
+          }
+          if( child.position.y > 1000 || child.position.y < -1000 ){
+            child.removeFromParent()
+          }
+          
+        }
+      }
     }
     scoreNode.text = "Score: " + String(score)
   }
   
   func didBeginContact(contact: SKPhysicsContact) {
-    _ = contact.bodyA.node as! SKSpriteNode
-    _ = contact.bodyB.node as! SKSpriteNode
+    print( contact.bodyA.node?.name, contact.bodyB.node?.name )
+
     
     print( contact.bodyA.node?.name, contact.bodyB.node?.name )
     print( contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask )
     if (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
       (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot) {
         
+        let asteroid = contact.bodyA.node as! Asteroid!
+        let phaserShot = contact.bodyB.node as! SKSpriteNode
+
         //let contactPoint = contact.contactPoint
   //      let midX = contact.contactPoint.x + (firstNode.size.width / 2)
   //      let midY = contact.contactPoint.y + (firstNode.size.height / 2)
-        self.addChild(asteroidExplodeAnimation(contact.contactPoint))
+        self.addChild(asteroid.explode())
         contact.bodyB.node?.removeFromParent()  // Remove asteroid
         // Replace with 2 smaller asteroids
         contact.bodyA.node?.removeFromParent()  // remove phaserShot

@@ -24,19 +24,3 @@ struct Mass {
   static let AsteroidSmall : CGFloat = 500.0
 }
 
-func asteroidExplodeAnimation( location : CGPoint) -> SKEmitterNode {
-  var burstNode : SKEmitterNode = SKEmitterNode()
-  if let burstPath = NSBundle.mainBundle().pathForResource(
-    "AsteroidExplode", ofType: "sks") {
-    
-    burstNode = NSKeyedUnarchiver.unarchiveObjectWithFile(burstPath)
-      as! SKEmitterNode
-    burstNode.position = location
-    burstNode.runAction(SKAction.sequence(
-      [SKAction.waitForDuration(0.5),
-        SKAction.fadeAlphaTo(0.0, duration: 0.3),
-        SKAction.removeFromParent()
-      ]))
-  }
-  return burstNode
-}

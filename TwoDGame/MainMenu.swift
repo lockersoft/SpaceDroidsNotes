@@ -23,7 +23,7 @@ class MainMenu: SKScene {
   override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
     for touch in touches {
       let location = touch.locationInNode(self)
-      self.addChild(asteroidExplodeAnimation(touch.locationInView(self.view)))
+      //  self.addChild(asteroidExplodeAnimation(touch.locationInView(self.view)))
       runAction(sound)
 
       print( nodeAtPoint(location).name, terminator: "" )

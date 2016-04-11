@@ -54,6 +54,7 @@ class Asteroid: SKSpriteNode {
     self.physicsBody!.categoryBitMask = PhysicsCategory.Asteroid
     self.physicsBody!.collisionBitMask = PhysicsCategory.All
     self.physicsBody!.mass = Mass.AsteroidLarge
+    self.name = "Asteroid"
   }
   
   func animateAsteroid(){
@@ -63,5 +64,29 @@ class Asteroid: SKSpriteNode {
   func move(){
     position.x = position.x + CGFloat(chosenDirection.0)
     position.y = position.y + CGFloat(chosenDirection.1)
+  }
+  
+  func explode() -> SKEmitterNode {
+    let centerX = (self.size.width / 2) + self.position.x
+    let centerY = (self.size.height / 2) + self.position.y
+    return self.asteroidExplodeAnimation(CGPoint( x: centerX, y: centerY))
+    
+  }
+  
+  func asteroidExplodeAnimation( location : CGPoint ) -> SKEmitterNode {
+    var burstNode : SKEmitterNode = SKEmitterNode()
+    if let burstPath = NSBundle.mainBundle().pathForResource(
+      "AsteroidExplode", ofType: "sks") {
+        
+        burstNode = NSKeyedUnarchiver.unarchiveObjectWithFile(burstPath)
+          as! SKEmitterNode
+        burstNode.position = location
+        burstNode.runAction(SKAction.sequence(
+          [SKAction.waitForDuration(0.5),
+            SKAction.fadeAlphaTo(0.0, duration: 0.3),
+            SKAction.removeFromParent()
+          ]))
+    }
+    return burstNode
   }
 }
