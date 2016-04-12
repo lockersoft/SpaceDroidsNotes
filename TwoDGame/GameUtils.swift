@@ -15,6 +15,7 @@ struct PhysicsCategory {
   static let Asteroid  : UInt32 = 0b1       // 1
   static let PhaserShot: UInt32 = 0b10      // 2
   static let LaserShot : UInt32 = 0b100     // 4
+  static let SpaceShip : UInt32 = 0b1000    // 8
 }
 
 struct Mass {
@@ -22,5 +23,6 @@ struct Mass {
   static let AsteroidLarge : CGFloat = 2000.0
   static let AsteroidMedium: CGFloat = 1000.0
   static let AsteroidSmall : CGFloat = 500.0
+  static let SpaceShip     : CGFloat = 750.0
 }
 

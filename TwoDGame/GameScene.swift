@@ -16,8 +16,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   
   var asteroid : Asteroid!
   var asteroid2 : Asteroid!
+  var asteroid3 : Asteroid!
+  
   var asteroids = [Asteroid]()
-  var rocket = SKNode(fileNamed: "Spaceship")
+  var rocket = SKSpriteNode(fileNamed: "Spaceship")
   var scoreNode = SKLabelNode()
   var score = 0
   var rotationOffset : CGFloat = 0.0
@@ -25,7 +27,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   // create rotation gesture recognizer
   let rotateGesture = UIRotationGestureRecognizer()
   let longTapGesture = UILongPressGestureRecognizer()
-  var sound = SKAction.playSoundFileNamed("scifi10.mp3", waitForCompletion: false)
+  var phaserSound = SKAction.playSoundFileNamed("scifi10.mp3", waitForCompletion: false)
+  var asteroidExplosionSound = SKAction.playSoundFileNamed("blast", waitForCompletion: false)
   
   var shipRotation = 0.0
   
@@ -40,19 +43,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     longTapGesture.addTarget(self, action: "addAsteroid:")
     self.view!.addGestureRecognizer(longTapGesture)
     
-    rocket = self.childNodeWithName("Spaceship")    // add from .sks
+    rocket = self.childNodeWithName("Spaceship")  as? SKSpriteNode  // add from .sks
     rocket?.zPosition = 100   // Move to top
+    rocket?.physicsBody = SKPhysicsBody(circleOfRadius: rocket!.size.width / 3)
+    rocket?.physicsBody!.allowsRotation = true
+    rocket?.physicsBody!.categoryBitMask = PhysicsCategory.SpaceShip
+    rocket?.physicsBody!.collisionBitMask = PhysicsCategory.Asteroid
+    rocket?.physicsBody!.contactTestBitMask = PhysicsCategory.Asteroid
+    rocket?.physicsBody!.mass = Mass.SpaceShip
+
+    
     scoreNode = self.childNodeWithName("Score")! as! SKLabelNode
     
-    asteroid = self.childNodeWithName("LargeAsteroid") as! Asteroid!
-    asteroid.initializeAsteroid()
-    asteroid.animateAsteroid()
-    
+  //  asteroid = self.childNodeWithName("LargeAsteroid") as! Asteroid!
+   // asteroid.position = CGPoint(x: 200, y: 200)
+    //asteroid.initializeAsteroid( "large" )
+   // asteroid.animateAsteroid()
+    asteroid = Asteroid( pos: CGPoint(x:-200, y:500), size: "large" )
     asteroid2 = Asteroid(pos: CGPoint( x:200, y:500), size: "medium" )
+    asteroid3 = Asteroid(pos: CGPoint( x:200, y:300), size: "small" )
+    self.addChild(asteroid)
     self.addChild(asteroid2)
+    self.addChild(asteroid3)
     
     asteroids.append( asteroid )
     asteroids.append( asteroid2 )
+    asteroids.append( asteroid3 )
     
     let myLabel = SKLabelNode(fontNamed:"Chalkduster")
     myLabel.text = "Hello, World!"
@@ -108,7 +124,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     phaserShot.name = "phaserShot"
     phaserShot.zRotation = rocket!.zRotation
     phaserShot.position = CGPointMake(rocket!.position.x, rocket!.position.y)
-    
+
     let xDist = (cos(phaserShot.zRotation + ninetyDegreesInRadians) * 1000 ) + phaserShot.position.x
     let yDist = (sin(phaserShot.zRotation + ninetyDegreesInRadians) * 1000 ) + phaserShot.position.y
     
@@ -128,8 +144,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     phaserShot.physicsBody!.mass = Mass.PhaserShot
     
     addChild(phaserShot)
-    runAction(sound)
-    
+    runAction(phaserSound)
   }
   
   
@@ -153,7 +168,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     for child in self.children {
       if child.name == "phaserShot" {
         if let child = child as? SKSpriteNode {
-          if( child.position.x > 850 || child.position.x < -850){
+          if( child.position.x > 1000 || child.position.x < -1000){
             child.removeFromParent()
           }
           if( child.position.y > 500 || child.position.y < -500 ){
@@ -167,35 +182,86 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   }
   
   func didBeginContact(contact: SKPhysicsContact) {
-    if (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
-      (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot) {
+    
+    if( contact.bodyA.categoryBitMask == PhysicsCategory.SpaceShip ||
+      contact.bodyB.categoryBitMask == PhysicsCategory.SpaceShip){
+        
+        print("Something hit the spaceship")
+        print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
+        // Remove Spaceship and Asteroid
+        contact.bodyB.node?.removeFromParent()
+        contact.bodyA.node?.removeFromParent()
+        
+        // Add a super explosion
+        if( contact.bodyA.node?.name == "Spaceship"){
+          self.addChild((contact.bodyB.node as! Asteroid).explode())
+          self.addChild((contact.bodyB.node as! Asteroid).explode())
+          self.addChild((contact.bodyB.node as! Asteroid).explode())
+        } else {
+          self.addChild((contact.bodyA.node as! Asteroid).explode())
+          self.addChild((contact.bodyB.node as! Asteroid).explode())
+          self.addChild((contact.bodyB.node as! Asteroid).explode())
+        }
+        runAction(asteroidExplosionSound)
+        runAction(asteroidExplosionSound)
+        runAction(asteroidExplosionSound)
+    }
+    
+    
+    if (
+        (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
+        (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot) ||
+        (contact.bodyA.categoryBitMask == PhysicsCategory.PhaserShot) &&
+        (contact.bodyB.categoryBitMask == PhysicsCategory.Asteroid)
+      ) {
       
-      print( contact.bodyA.node?.name, contact.bodyB.node?.name )
+      print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
       print( contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask )
 
-      // TODO:  figure out why bodyB is sometimes nil
-      if let asteroid = contact.bodyA.node as? Asteroid!,
-        let phaserShot = contact.bodyB.node as? SKSpriteNode {
-
-//      let asteroid = contact.bodyA.node as! Asteroid!
-//      let phaserShot = contact.bodyB.node as! SKSpriteNode
+      if let bodyA = contact.bodyA.node as? SKSpriteNode,
+         let bodyB = contact.bodyB.node as? SKSpriteNode {
 
         let contactPoint = contact.contactPoint
-        self.addChild(asteroid.explode())
-        asteroid.removeFromParent()  // Remove asteroid
-        // Replace with 2 smaller asteroids
-        var asteroidMedium : Asteroid
-        if( asteroid.name == "Asteroid"){
-          for _ in 0..<2  {
-            asteroidMedium = Asteroid(pos: contactPoint, size: "medium")
-            asteroids.append(asteroidMedium)
-            self.addChild(asteroidMedium)
-          }
+        
+        // Remove both from scene
+        bodyB.removeFromParent()
+        bodyA.removeFromParent()
+          
+        // Explode whichever body is the asteroid
+        if( bodyA.name == "phaserShot" ){
+          self.addChild((bodyB as! Asteroid).explode())
+          runAction(asteroidExplosionSound)
+        }
+        if( bodyB.name == "phaserShot" ){
+          self.addChild((bodyA as! Asteroid).explode())
+          runAction(asteroidExplosionSound)
         }
 
-        phaserShot.removeFromParent()  // remove phaserShot
-      
-        score += 1
+        // Replace with 2 smaller asteroids
+        var tempAsteroid : Asteroid
+          
+        print( asteroid.name )
+        if( bodyA.name == "Asteroidlarge" || bodyB.name == "Asteroidlarge" ){
+          for _ in 0..<2  {
+            tempAsteroid = Asteroid(pos: contactPoint, size: "medium")
+            asteroids.append(tempAsteroid)
+            self.addChild(tempAsteroid)
+          }
+          score += 1
+        }
+          
+        if( bodyA.name == "Asteroidmedium" || bodyB.name == "Asteroidmedium" ){
+          for _ in 0..<2  {
+            tempAsteroid = Asteroid(pos: contactPoint, size: "small")
+            asteroids.append(tempAsteroid)
+            self.addChild(tempAsteroid)
+          }
+          score += 5
+        }
+
+        if( bodyA.name == "Asteroidsmall" || bodyB.name == "Asteroidsmall" ){
+          score += 10
+        }
       }
     }
   }

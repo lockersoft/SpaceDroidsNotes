@@ -16,27 +16,25 @@ class Asteroid: SKSpriteNode {
   var pos = CGPoint(x: 0, y: 0)
   var directions = [(0,1), (0,-1), (1, 0), (-1, 0), (-1, -1), (1, 1), (1, -1),(-1,0), (-1,1)]
   var chosenDirection = (0,1)
+  var asteroidSize : String = "large"
   
-  init( pos : CGPoint ) {
-    self.pos = pos
-    // Choose a random direction for the asteroid to move
-    chosenDirection = directions[Int(arc4random_uniform(UInt32(directions.count)))]
-    
-    // let texture = SKTexture(imageNamed: "large0.png")
-    let initialImageName = Int(arc4random_uniform(UInt32(15)))
-    let texture = SKTexture(imageNamed: "large\(initialImageName).png")
-    super.init(texture: texture, color: UIColor.clearColor(), size: texture.size())
-    initializeAsteroid()
-    animateAsteroid()
+  convenience init( pos : CGPoint ) {
+    self.init( pos : pos, size: "large")
   }
   
   init( pos : CGPoint, size : String ){
     chosenDirection = directions[Int(arc4random_uniform(UInt32(directions.count)))]
-    self.pos = pos
+
+    self.asteroidSize = size
     let initialImageName = Int(arc4random_uniform(UInt32(15)))
     let texture = SKTexture(imageNamed: "\(size)\(initialImageName).png")
     super.init(texture: texture, color: UIColor.clearColor(), size: texture.size())
-    initializeAsteroidMedium(size)
+    
+    self.pos = pos
+    self.userData = NSMutableDictionary()
+    self.userData?.setValue(size, forKeyPath: "size")
+
+    initializeAsteroid(size)
     animateAsteroid()
   }
   
@@ -44,7 +42,7 @@ class Asteroid: SKSpriteNode {
     super.init( coder: aDecoder )
   }
   
-  func initializeAsteroidMedium(size: String){
+  func initializeAsteroid(size: String){
     self.position = pos
     textureAtlas = SKTextureAtlas(named: "\(size).atlas")
     self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -64,11 +62,11 @@ class Asteroid: SKSpriteNode {
     self.physicsBody!.allowsRotation = true
     self.physicsBody!.categoryBitMask = PhysicsCategory.Asteroid
     self.physicsBody!.collisionBitMask = PhysicsCategory.All
-    self.physicsBody!.mass = Mass.AsteroidMedium
+    self.physicsBody!.mass = Mass.AsteroidLarge
     self.name = "Asteroid\(size)"
   }
 
-  
+  /*
   func initializeAsteroid(){
     self.position = pos
     textureAtlas = SKTextureAtlas(named: "large.Atlas")
@@ -92,6 +90,7 @@ class Asteroid: SKSpriteNode {
     self.name = "Asteroid"
   }
   
+  */
   func animateAsteroid(){
     self.runAction(SKAction.repeatActionForever(animatePlayerAction), withKey: "AsteroidRotation" )
   }
