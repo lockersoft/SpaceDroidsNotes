@@ -20,6 +20,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   var rocket = SKNode(fileNamed: "Spaceship")
   var scoreNode = SKLabelNode()
   var score = 0
+  var rotationOffset : CGFloat = 0.0
   
   // create rotation gesture recognizer
   let rotateGesture = UIRotationGestureRecognizer()
@@ -47,7 +48,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     asteroid.initializeAsteroid()
     asteroid.animateAsteroid()
     
-    asteroid2 = Asteroid(pos: CGPoint( x:200, y:500))
+    asteroid2 = Asteroid(pos: CGPoint( x:200, y:500), size: "medium" )
     self.addChild(asteroid2)
     
     asteroids.append( asteroid )
@@ -90,7 +91,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   func rotateRocket(gesture: UIRotationGestureRecognizer) {
     
     if( gesture.state == .Changed ){
-      rocket!.zRotation = -gesture.rotation
+      rocket!.zRotation = -gesture.rotation + rotationOffset
+    }
+    if( gesture.state == .Ended ){
+      rotationOffset = rocket!.zRotation
     }
   }
   
@@ -119,7 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     phaserShot.physicsBody = SKPhysicsBody(circleOfRadius: phaserShot.size.width )
     phaserShot.physicsBody?.allowsRotation = true
     phaserShot.physicsBody!.categoryBitMask = PhysicsCategory.PhaserShot
-    phaserShot.physicsBody!.collisionBitMask = PhysicsCategory.Asteroid
+    phaserShot.physicsBody!.collisionBitMask = PhysicsCategory.Asteroid  & PhysicsCategory.PhaserShot
     phaserShot.physicsBody!.contactTestBitMask = PhysicsCategory.PhaserShot | PhysicsCategory.Asteroid
     phaserShot.physicsBody!.mass = Mass.PhaserShot
     
@@ -149,10 +153,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     for child in self.children {
       if child.name == "phaserShot" {
         if let child = child as? SKSpriteNode {
-          if( child.position.x > 1000 || child.position.x < -1000){
+          if( child.position.x > 850 || child.position.x < -850){
             child.removeFromParent()
           }
-          if( child.position.y > 1000 || child.position.y < -1000 ){
+          if( child.position.y > 500 || child.position.y < -500 ){
             child.removeFromParent()
           }
           
@@ -163,25 +167,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   }
   
   func didBeginContact(contact: SKPhysicsContact) {
-    print( contact.bodyA.node?.name, contact.bodyB.node?.name )
-
-    
-    print( contact.bodyA.node?.name, contact.bodyB.node?.name )
-    print( contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask )
     if (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
       (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot) {
-        
-        let asteroid = contact.bodyA.node as! Asteroid!
-        let phaserShot = contact.bodyB.node as! SKSpriteNode
+      
+      print( contact.bodyA.node?.name, contact.bodyB.node?.name )
+      print( contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask )
 
-        //let contactPoint = contact.contactPoint
-  //      let midX = contact.contactPoint.x + (firstNode.size.width / 2)
-  //      let midY = contact.contactPoint.y + (firstNode.size.height / 2)
+      // TODO:  figure out why bodyB is sometimes nil
+      if let asteroid = contact.bodyA.node as? Asteroid!,
+        let phaserShot = contact.bodyB.node as? SKSpriteNode {
+
+//      let asteroid = contact.bodyA.node as! Asteroid!
+//      let phaserShot = contact.bodyB.node as! SKSpriteNode
+
+        let contactPoint = contact.contactPoint
         self.addChild(asteroid.explode())
-        contact.bodyB.node?.removeFromParent()  // Remove asteroid
+        asteroid.removeFromParent()  // Remove asteroid
         // Replace with 2 smaller asteroids
-        contact.bodyA.node?.removeFromParent()  // remove phaserShot
-        score++
+        var asteroidMedium : Asteroid
+        if( asteroid.name == "Asteroid"){
+          for _ in 0..<2  {
+            asteroidMedium = Asteroid(pos: contactPoint, size: "medium")
+            asteroids.append(asteroidMedium)
+            self.addChild(asteroidMedium)
+          }
+        }
+
+        phaserShot.removeFromParent()  // remove phaserShot
+      
+        score += 1
+      }
     }
   }
   

@@ -30,9 +30,44 @@ class Asteroid: SKSpriteNode {
     animateAsteroid()
   }
   
+  init( pos : CGPoint, size : String ){
+    chosenDirection = directions[Int(arc4random_uniform(UInt32(directions.count)))]
+    self.pos = pos
+    let initialImageName = Int(arc4random_uniform(UInt32(15)))
+    let texture = SKTexture(imageNamed: "medium\(initialImageName).png")
+    super.init(texture: texture, color: UIColor.clearColor(), size: texture.size())
+    initializeAsteroidMedium()
+    animateAsteroid()
+  }
+  
   required init?(coder aDecoder: NSCoder) {
     super.init( coder: aDecoder )
   }
+  
+  func initializeAsteroidMedium(){
+    self.position = pos
+    textureAtlas = SKTextureAtlas(named: "medium.atlas")
+    self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+    
+    //for( var i=0;i<=15;i += 1) {
+    for i in 0..<15 {
+     let name = "medium\(i)"
+    //  print( name, terminator: "" );
+      playerAnimation.append(SKTexture(imageNamed: name))
+    }
+    
+    animatePlayerAction = SKAction.animateWithTextures(playerAnimation,
+                                                       timePerFrame: 0.08, resize: true, restore: true )
+    
+    // Add physics to asteroid
+    self.physicsBody = SKPhysicsBody(circleOfRadius: self.size.width / 5)
+    self.physicsBody!.allowsRotation = true
+    self.physicsBody!.categoryBitMask = PhysicsCategory.Asteroid
+    self.physicsBody!.collisionBitMask = PhysicsCategory.All
+    self.physicsBody!.mass = Mass.AsteroidMedium
+    self.name = "AsteroidMedium"
+  }
+
   
   func initializeAsteroid(){
     self.position = pos
@@ -41,7 +76,7 @@ class Asteroid: SKSpriteNode {
     
     for( var i=0;i<=15;i++) {
       let name = "aLarge\(i)"
-      print( name, terminator: "" );
+ //     print( name, terminator: "" );
       playerAnimation.append(SKTexture(imageNamed: name))
     }
     
@@ -69,7 +104,7 @@ class Asteroid: SKSpriteNode {
   func explode() -> SKEmitterNode {
     let centerX = (self.size.width / 2) + self.position.x
     let centerY = (self.size.height / 2) + self.position.y
-    return self.asteroidExplodeAnimation(CGPoint( x: centerX, y: centerY))
+    return self.asteroidExplodeAnimation(CGPoint( x: self.position.x, y: self.position.y))
     
   }
   
