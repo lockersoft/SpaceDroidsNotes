@@ -22,9 +22,9 @@ class Asteroid: SKSpriteNode {
     // Choose a random direction for the asteroid to move
     chosenDirection = directions[Int(arc4random_uniform(UInt32(directions.count)))]
     
-    // let texture = SKTexture(imageNamed: "aLarge0.png")
+    // let texture = SKTexture(imageNamed: "large0.png")
     let initialImageName = Int(arc4random_uniform(UInt32(15)))
-    let texture = SKTexture(imageNamed: "aLarge\(initialImageName).png")
+    let texture = SKTexture(imageNamed: "large\(initialImageName).png")
     super.init(texture: texture, color: UIColor.clearColor(), size: texture.size())
     initializeAsteroid()
     animateAsteroid()
@@ -34,9 +34,9 @@ class Asteroid: SKSpriteNode {
     chosenDirection = directions[Int(arc4random_uniform(UInt32(directions.count)))]
     self.pos = pos
     let initialImageName = Int(arc4random_uniform(UInt32(15)))
-    let texture = SKTexture(imageNamed: "medium\(initialImageName).png")
+    let texture = SKTexture(imageNamed: "\(size)\(initialImageName).png")
     super.init(texture: texture, color: UIColor.clearColor(), size: texture.size())
-    initializeAsteroidMedium()
+    initializeAsteroidMedium(size)
     animateAsteroid()
   }
   
@@ -44,14 +44,14 @@ class Asteroid: SKSpriteNode {
     super.init( coder: aDecoder )
   }
   
-  func initializeAsteroidMedium(){
+  func initializeAsteroidMedium(size: String){
     self.position = pos
-    textureAtlas = SKTextureAtlas(named: "medium.atlas")
+    textureAtlas = SKTextureAtlas(named: "\(size).atlas")
     self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     
     //for( var i=0;i<=15;i += 1) {
     for i in 0..<15 {
-     let name = "medium\(i)"
+     let name = "\(size)\(i)"
     //  print( name, terminator: "" );
       playerAnimation.append(SKTexture(imageNamed: name))
     }
@@ -65,17 +65,17 @@ class Asteroid: SKSpriteNode {
     self.physicsBody!.categoryBitMask = PhysicsCategory.Asteroid
     self.physicsBody!.collisionBitMask = PhysicsCategory.All
     self.physicsBody!.mass = Mass.AsteroidMedium
-    self.name = "AsteroidMedium"
+    self.name = "Asteroid\(size)"
   }
 
   
   func initializeAsteroid(){
     self.position = pos
-    textureAtlas = SKTextureAtlas(named: "largeAsteroid.Atlas")
+    textureAtlas = SKTextureAtlas(named: "large.Atlas")
     self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     
     for( var i=0;i<=15;i++) {
-      let name = "aLarge\(i)"
+      let name = "large\(i)"
  //     print( name, terminator: "" );
       playerAnimation.append(SKTexture(imageNamed: name))
     }

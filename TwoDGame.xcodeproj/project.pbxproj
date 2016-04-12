@@ -24,7 +24,7 @@
 		36B14C9F1CA7876F00B4965F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 36B14C9E1CA7876F00B4965F /* Assets.xcassets */; };
 		36B14CA21CA7876F00B4965F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 36B14CA01CA7876F00B4965F /* LaunchScreen.storyboard */; };
 		36BCC0E11CAB53A300141F18 /* Asteroid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36BCC0E01CAB53A300141F18 /* Asteroid.swift */; };
-		36BCC0E31CAB690600141F18 /* largeAsteroid.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 36BCC0E21CAB690600141F18 /* largeAsteroid.atlas */; };
+		36BCC0E31CAB690600141F18 /* large.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 36BCC0E21CAB690600141F18 /* large.atlas */; };
 		36EBE1411CAE393400124D11 /* scifi10.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36EBE1401CAE393400124D11 /* scifi10.mp3 */; };
 		36EBE1431CAEC40400124D11 /* GameUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36EBE1421CAEC40400124D11 /* GameUtils.swift */; };
 		36EBE14B1CB069E800124D11 /* lockersoftiPhoneLaunch.png in Resources */ = {isa = PBXBuildFile; fileRef = 36EBE14A1CB069E800124D11 /* lockersoftiPhoneLaunch.png */; };
@@ -51,7 +51,7 @@
 		36B14CA11CA7876F00B4965F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		36B14CA31CA7876F00B4965F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		36BCC0E01CAB53A300141F18 /* Asteroid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asteroid.swift; sourceTree = "<group>"; };
-		36BCC0E21CAB690600141F18 /* largeAsteroid.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = largeAsteroid.atlas; path = asteroids/largeAsteroid.atlas; sourceTree = "<group>"; };
+		36BCC0E21CAB690600141F18 /* large.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = large.atlas; path = asteroids/large.atlas; sourceTree = "<group>"; };
 		36EBE1401CAE393400124D11 /* scifi10.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = scifi10.mp3; sourceTree = "<group>"; };
 		36EBE1421CAEC40400124D11 /* GameUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameUtils.swift; sourceTree = "<group>"; };
 		36EBE14A1CB069E800124D11 /* lockersoftiPhoneLaunch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lockersoftiPhoneLaunch.png; sourceTree = "<group>"; };
@@ -69,13 +69,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1DD62F981CBC8D67007B6B43 /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "New Group";
-			sourceTree = "<group>";
-		};
 		36B14C871CA7876E00B4965F = {
 			isa = PBXGroup;
 			children = (
@@ -100,7 +93,6 @@
 			isa = PBXGroup;
 			children = (
 				1DD62F991CBC8DAC007B6B43 /* medium.atlas */,
-				1DD62F981CBC8D67007B6B43 /* New Group */,
 				36EBE14C1CB0B8B500124D11 /* MainMenu.sks */,
 				36021D711CB0E0D9001BC205 /* MainMenu.swift */,
 				36BCC0E01CAB53A300141F18 /* Asteroid.swift */,
@@ -110,7 +102,7 @@
 				36B14C991CA7876E00B4965F /* GameViewController.swift */,
 				36EBE1421CAEC40400124D11 /* GameUtils.swift */,
 				36B14C9B1CA7876E00B4965F /* Main.storyboard */,
-				36BCC0E21CAB690600141F18 /* largeAsteroid.atlas */,
+				36BCC0E21CAB690600141F18 /* large.atlas */,
 				36B14C9E1CA7876F00B4965F /* Assets.xcassets */,
 				360D1C161CB0CB3200A3D52A /* spacebackground.png */,
 				36EBE14A1CB069E800124D11 /* lockersoftiPhoneLaunch.png */,
@@ -188,7 +180,7 @@
 				1BD0635D1CB58A3400706796 /* spark.png in Resources */,
 				1BD0635F1CB58C4500706796 /* AsteroidExplode.sks in Resources */,
 				1B0C07181CB81B0500D48A0D /* spark.png in Resources */,
-				36BCC0E31CAB690600141F18 /* largeAsteroid.atlas in Resources */,
+				36BCC0E31CAB690600141F18 /* large.atlas in Resources */,
 				1DD62F9A1CBC8DAC007B6B43 /* medium.atlas in Resources */,
 				36B14C961CA7876E00B4965F /* GameScene.sks in Resources */,
 				360D1C171CB0CB3200A3D52A /* spacebackground.png in Resources */,
