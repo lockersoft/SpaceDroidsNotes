@@ -24,6 +24,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   var score = 0
   var rotationOffset : CGFloat = 0.0
   
+  var xMax : CGFloat = 0.0
+  var yMax : CGFloat = 0.0
+  var xMin : CGFloat = 0.0
+  var yMin : CGFloat = 0.0
+  
   // create rotation gesture recognizer
   let rotateGesture = UIRotationGestureRecognizer()
   let longTapGesture = UILongPressGestureRecognizer()
@@ -36,6 +41,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /* Setup your scene here */
     
     self.physicsWorld.contactDelegate = self
+    xMax = self.scene!.size.height / 2
+    yMax = self.scene!.size.width / 2
+    xMin = -xMax
+    yMin = -yMax
     
     rotateGesture.addTarget(self, action: "rotateRocket:")
     self.view!.addGestureRecognizer(rotateGesture)
@@ -51,15 +60,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     rocket?.physicsBody!.collisionBitMask = PhysicsCategory.Asteroid
     rocket?.physicsBody!.contactTestBitMask = PhysicsCategory.Asteroid
     rocket?.physicsBody!.mass = Mass.SpaceShip
-
+    
     
     scoreNode = self.childNodeWithName("Score")! as! SKLabelNode
     
-  //  asteroid = self.childNodeWithName("LargeAsteroid") as! Asteroid!
-   // asteroid.position = CGPoint(x: 200, y: 200)
+    //  asteroid = self.childNodeWithName("LargeAsteroid") as! Asteroid!
+    // asteroid.position = CGPoint(x: 200, y: 200)
     //asteroid.initializeAsteroid( "large" )
-   // asteroid.animateAsteroid()
-    asteroid = Asteroid( pos: CGPoint(x:-200, y:500), size: "large" )
+    // asteroid.animateAsteroid()
+    asteroid = Asteroid( pos: CGPoint( x:-200, y:500), size: "large" )
     asteroid2 = Asteroid(pos: CGPoint( x:200, y:500), size: "medium" )
     asteroid3 = Asteroid(pos: CGPoint( x:200, y:300), size: "small" )
     self.addChild(asteroid)
@@ -86,10 +95,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     self.addChild(myLabel)
     
     /*      var largeRock:SKSpriteNode = SKSpriteNode()
-    if let someSpriteNode:SKSpriteNode = self.childNodeWithName("LargeAsteroid") as? SKSpriteNode {
-    largeRock = someSpriteNode
-    }
-    */
+     if let someSpriteNode:SKSpriteNode = self.childNodeWithName("LargeAsteroid") as? SKSpriteNode {
+     largeRock = someSpriteNode
+     }
+     */
     //      let largeRock = SKSpriteNode(imageNamed: "a10000")
     //largeRock.position = CGPoint( x:500, y:500)
     //largeRock.xScale = 1.0
@@ -124,7 +133,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     phaserShot.name = "phaserShot"
     phaserShot.zRotation = rocket!.zRotation
     phaserShot.position = CGPointMake(rocket!.position.x, rocket!.position.y)
-
+    
     let xDist = (cos(phaserShot.zRotation + ninetyDegreesInRadians) * 1000 ) + phaserShot.position.x
     let yDist = (sin(phaserShot.zRotation + ninetyDegreesInRadians) * 1000 ) + phaserShot.position.y
     
@@ -157,59 +166,82 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     self.addChild(asteroid)
   }
   
-  /// 
+  /// Mark: UPDATE
   // UPDATE
   
   override func update(currentTime: NSTimeInterval){
     for asteroid in asteroids {
+      /*if (!intersectsNode(asteroid)) {
+        // Remove from the array
+        asteroids = asteroids.filter { $0 != asteroid }
+        print( "Asteroid[]: \(asteroids.count)" )
+      }
+*/
       asteroid.move()
     }
     // Find all phaserShots and remove if off screen
     for child in self.children {
       if child.name == "phaserShot" {
         if let child = child as? SKSpriteNode {
-          if( child.position.x > 1000 || child.position.x < -1000){
+          if( child.position.x > self.scene!.size.width || child.position.x < -self.scene!.size.width){
             child.removeFromParent()
           }
-          if( child.position.y > 500 || child.position.y < -500 ){
+          if( child.position.y > self.scene!.size.height || child.position.y < -self.scene!.size.height){
             child.removeFromParent()
           }
           
         }
+      } else if( child.name == "Asteroidlarge" ||
+        child.name == "Asteroidmedium" ||
+        child.name == "Asteroidsmall") {
+        
+     //   print( child.position.x, child.position.y )
+        // Put the asteroid at the other side of the screen so it "wraps" around
+        if( child.position.y > yMax ){
+          child.position.y = yMin
+        } else if( child.position.y < yMin){
+          child.position.y = yMax
+        }
+        if( child.position.x > xMax ){
+          child.position.x = xMin
+        } else if( child.position.x < xMin ){
+          child.position.x = xMax
+        }
+ //     } else if( child.name == "asteroidExplode" ){
+ //       child.removeFromParent()
       }
     }
     scoreNode.text = "Score: " + String(score)
   }
   
+  
   func didBeginContact(contact: SKPhysicsContact) {
     
     if( contact.bodyA.categoryBitMask == PhysicsCategory.SpaceShip ||
       contact.bodyB.categoryBitMask == PhysicsCategory.SpaceShip){
-        
-        print("Something hit the spaceship")
-        print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
-        // Remove Spaceship and Asteroid
-        contact.bodyB.node?.removeFromParent()
-        contact.bodyA.node?.removeFromParent()
-        
-        // Add a super explosion
-        if( contact.bodyA.node?.name == "Spaceship"){
-          self.addChild((contact.bodyB.node as! Asteroid).explode())
-          self.addChild((contact.bodyB.node as! Asteroid).explode())
-          self.addChild((contact.bodyB.node as! Asteroid).explode())
-        } else {
-          self.addChild((contact.bodyA.node as! Asteroid).explode())
-          self.addChild((contact.bodyB.node as! Asteroid).explode())
-          self.addChild((contact.bodyB.node as! Asteroid).explode())
-        }
-        runAction(asteroidExplosionSound)
-        runAction(asteroidExplosionSound)
-        runAction(asteroidExplosionSound)
+      
+      print("Something hit the spaceship")
+      print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
+      // Remove Spaceship and Asteroid
+      contact.bodyB.node?.removeFromParent()
+      contact.bodyA.node?.removeFromParent()
+      
+      // Add a super explosion
+      if( contact.bodyA.node?.name == "Spaceship"){
+        self.addChild((contact.bodyB.node as! Asteroid).explode())
+        self.addChild((contact.bodyB.node as! Asteroid).explode())
+        self.addChild((contact.bodyB.node as! Asteroid).explode())
+      } else {
+        self.addChild((contact.bodyA.node as! Asteroid).explode())
+        self.addChild((contact.bodyB.node as! Asteroid).explode())
+        self.addChild((contact.bodyB.node as! Asteroid).explode())
+      }
+      runAction(asteroidExplosionSound)
     }
     
     
     if (
-        (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
+      (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
         (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot) ||
         (contact.bodyA.categoryBitMask == PhysicsCategory.PhaserShot) &&
         (contact.bodyB.categoryBitMask == PhysicsCategory.Asteroid)
@@ -217,29 +249,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
       
       print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
       print( contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask )
-
+      
       if let bodyA = contact.bodyA.node as? SKSpriteNode,
-         let bodyB = contact.bodyB.node as? SKSpriteNode {
-
+        let bodyB = contact.bodyB.node as? SKSpriteNode {
+        
         let contactPoint = contact.contactPoint
         
-        // Remove both from scene
-        bodyB.removeFromParent()
-        bodyA.removeFromParent()
-          
         // Explode whichever body is the asteroid
         if( bodyA.name == "phaserShot" ){
           self.addChild((bodyB as! Asteroid).explode())
+          bodyB.removeFromParent()
+          // Remove the asteroid from the list of asteroids
+          
           runAction(asteroidExplosionSound)
         }
         if( bodyB.name == "phaserShot" ){
           self.addChild((bodyA as! Asteroid).explode())
+          bodyA.removeFromParent()
           runAction(asteroidExplosionSound)
         }
-
+        
         // Replace with 2 smaller asteroids
         var tempAsteroid : Asteroid
-          
+        
         print( asteroid.name )
         if( bodyA.name == "Asteroidlarge" || bodyB.name == "Asteroidlarge" ){
           for _ in 0..<2  {
@@ -249,7 +281,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
           }
           score += 1
         }
-          
+        
         if( bodyA.name == "Asteroidmedium" || bodyB.name == "Asteroidmedium" ){
           for _ in 0..<2  {
             tempAsteroid = Asteroid(pos: contactPoint, size: "small")
@@ -258,7 +290,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
           }
           score += 5
         }
-
+        
         if( bodyA.name == "Asteroidsmall" || bodyB.name == "Asteroidsmall" ){
           score += 10
         }
@@ -273,11 +305,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
       _ = touch.locationInNode(self)
       createPhaserShot()
       /*let sprite = SKSpriteNode(imageNamed:"a10000")
-      
-      sprite.xScale = 1.5
-      sprite.yScale = 1.5
-      sprite.position = location
-      */
+       
+       sprite.xScale = 1.5
+       sprite.yScale = 1.5
+       sprite.position = location
+       */
       //   let vector = CGVector(dx: 5, dy: 5)
       
       //   let actionScale = SKAction.scaleBy(-0.1, duration: 0.5)

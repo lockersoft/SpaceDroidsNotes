@@ -17,6 +17,7 @@ class Asteroid: SKSpriteNode {
   var directions = [(0,1), (0,-1), (1, 0), (-1, 0), (-1, -1), (1, 1), (1, -1),(-1,0), (-1,1)]
   var chosenDirection = (0,1)
   var asteroidSize : String = "large"
+  static var asteroids = [Asteroid]()     // Class level var to store ALL asteroids created.
   
   convenience init( pos : CGPoint ) {
     self.init( pos : pos, size: "large")
@@ -36,6 +37,7 @@ class Asteroid: SKSpriteNode {
 
     initializeAsteroid(size)
     animateAsteroid()
+    Asteroid.asteroids.append( self )
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -115,10 +117,12 @@ class Asteroid: SKSpriteNode {
         burstNode = NSKeyedUnarchiver.unarchiveObjectWithFile(burstPath)
           as! SKEmitterNode
         burstNode.position = location
+        burstNode.name = "asteroidExplode"
         burstNode.runAction(SKAction.sequence(
           [SKAction.waitForDuration(0.5),
             SKAction.fadeAlphaTo(0.0, duration: 0.3),
-            SKAction.removeFromParent()
+            SKAction.removeFromParent(),
+            SKAction.runBlock({Asteroid.asteroids = Asteroid.asteroids.filter{ $0 != self}})
           ]))
     }
     return burstNode

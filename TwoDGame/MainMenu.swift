@@ -16,6 +16,7 @@ class MainMenu: SKScene {
   var sound = SKAction.playSoundFileNamed("scifi10.mp3", waitForCompletion: false)
 
   override func didMoveToView(view: SKView) {
+    print( view.bounds.size )
     playButton = self.childNodeWithName("PlayGame") as! SKSpriteNode!
     optionsButton = self.childNodeWithName("Options") as! SKSpriteNode!
   }
