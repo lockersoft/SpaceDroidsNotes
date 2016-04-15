@@ -14,6 +14,7 @@
 		1BD0635D1CB58A3400706796 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1BD0635B1CB58A3400706796 /* spark.png */; };
 		1BD0635F1CB58C4500706796 /* AsteroidExplode.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1BD0635E1CB58C4500706796 /* AsteroidExplode.sks */; };
 		1BD608AF1CB3F78B00354DEF /* OptionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD608AE1CB3F78B00354DEF /* OptionsMenu.swift */; };
+		1BFBFCB01CBE80450009AF11 /* ShipExplosion.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1BFBFCAF1CBE80450009AF11 /* ShipExplosion.sks */; };
 		1DD62F9A1CBC8DAC007B6B43 /* medium.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1DD62F991CBC8DAC007B6B43 /* medium.atlas */; };
 		36021D721CB0E0D9001BC205 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36021D711CB0E0D9001BC205 /* MainMenu.swift */; };
 		360D1C171CB0CB3200A3D52A /* spacebackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 360D1C161CB0CB3200A3D52A /* spacebackground.png */; };
@@ -41,6 +42,7 @@
 		1BD0635B1CB58A3400706796 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		1BD0635E1CB58C4500706796 /* AsteroidExplode.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = AsteroidExplode.sks; sourceTree = "<group>"; };
 		1BD608AE1CB3F78B00354DEF /* OptionsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsMenu.swift; sourceTree = "<group>"; };
+		1BFBFCAF1CBE80450009AF11 /* ShipExplosion.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ShipExplosion.sks; sourceTree = "<group>"; };
 		1DD62F991CBC8DAC007B6B43 /* medium.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = medium.atlas; path = asteroids/medium.atlas; sourceTree = "<group>"; };
 		36021D711CB0E0D9001BC205 /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		360D1C161CB0CB3200A3D52A /* spacebackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spacebackground.png; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				1BD0635E1CB58C4500706796 /* AsteroidExplode.sks */,
 				1BD608AE1CB3F78B00354DEF /* OptionsMenu.swift */,
 				1BD0635B1CB58A3400706796 /* spark.png */,
+				1BFBFCAF1CBE80450009AF11 /* ShipExplosion.sks */,
 			);
 			path = TwoDGame;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 				36B14C961CA7876E00B4965F /* GameScene.sks in Resources */,
 				1B72C3511CBD87FE00AE3D5A /* small.atlas in Resources */,
 				360D1C171CB0CB3200A3D52A /* spacebackground.png in Resources */,
+				1BFBFCB01CBE80450009AF11 /* ShipExplosion.sks in Resources */,
 				1B72C3551CBDA28900AE3D5A /* blast.mp3 in Resources */,
 				36B14CA21CA7876F00B4965F /* LaunchScreen.storyboard in Resources */,
 				1B0C07171CB81B0500D48A0D /* Electricity.sks in Resources */,

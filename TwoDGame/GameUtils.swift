@@ -26,3 +26,13 @@ struct Mass {
   static let SpaceShip     : CGFloat = 750.0
 }
 
+func randomCGPoint(maxX: CGFloat, maxY: CGFloat ) -> CGPoint {
+  let x = Double(arc4random_uniform(UInt32(maxX))) *
+    Double(arc4random_uniform(1)) * 2.0 - 1.0
+  let y = Double(arc4random_uniform(UInt32(maxY))) *
+    Double(arc4random_uniform(1)) * 2.0 - 1.0
+  
+  print("CGPoint: \(x) : \(y)")
+  return CGPoint(x: x, y: y)
+}
+

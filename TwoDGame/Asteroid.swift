@@ -103,8 +103,8 @@ class Asteroid: SKSpriteNode {
   }
   
   func explode() -> SKEmitterNode {
-    let centerX = (self.size.width / 2) + self.position.x
-    let centerY = (self.size.height / 2) + self.position.y
+ //   let centerX = (self.size.width / 2) + self.position.x
+ //   let centerY = (self.size.height / 2) + self.position.y
     return self.asteroidExplodeAnimation(CGPoint( x: self.position.x, y: self.position.y))
     
   }
@@ -119,10 +119,11 @@ class Asteroid: SKSpriteNode {
         burstNode.position = location
         burstNode.name = "asteroidExplode"
         burstNode.runAction(SKAction.sequence(
-          [SKAction.waitForDuration(0.5),
+          [
+            SKAction.waitForDuration(0.5),
             SKAction.fadeAlphaTo(0.0, duration: 0.3),
             SKAction.removeFromParent(),
-            SKAction.runBlock({Asteroid.asteroids = Asteroid.asteroids.filter{ $0 != self}})
+            SKAction.runBlock({Asteroid.asteroids = Asteroid.asteroids.filter{ $0 != self}})  // remove asteroid from the list
           ]))
     }
     return burstNode
