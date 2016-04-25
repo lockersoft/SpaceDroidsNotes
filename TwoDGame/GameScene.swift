@@ -1,3 +1,4 @@
+
 //
 //  GameScene.swift
 //  TwoDGame
@@ -19,12 +20,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
   var asteroid3 : Asteroid!
   
   var asteroids = [Asteroid]()
+  //  var nodesToRemove = [SKSpriteNode]()   // array to hold nodes that need to be removed
+  
   var rocket = SKSpriteNode(fileNamed: "Spaceship")
   var scoreNode = SKLabelNode()
   var score = 0
   var rotationOffset : CGFloat = 0.0
   
   var shipLives = 2
+  var maxLives = 5
+  var livesNodes = [SKNode]()        // array to hold "lives" ship icon
   var gameOver = false
   
   var xMax : CGFloat = 0.0
@@ -49,10 +54,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /* Setup your scene here */
     
     self.physicsWorld.contactDelegate = self
-    xMax = self.scene!.size.height / 2
-    yMax = self.scene!.size.width / 2
+    xMax = self.scene!.frame.size.height / 2
+    yMax = self.scene!.frame.size.width / 2
     xMin = -xMax
     yMin = -yMax
+    
+    for i in 0..<maxLives {
+      let tempNode = self.childNodeWithName("Life\(i)")!
+      tempNode.hidden = true
+      livesNodes.append( tempNode )
+    }
     
     rotateGesture.addTarget(self, action: "rotateRocket:")
     self.view!.addGestureRecognizer(rotateGesture)
@@ -60,14 +71,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     longTapGesture.addTarget(self, action: "addAsteroid:")
     self.view!.addGestureRecognizer(longTapGesture)
     
-    rocket = self.childNodeWithName("Spaceship") as? SKSpriteNode  // add from .sks
-    rocket?.zPosition = 100   // Move to top
-    rocket?.physicsBody = SKPhysicsBody(circleOfRadius: rocket!.size.width / 3)
-    rocket?.physicsBody!.allowsRotation = true
-    rocket?.physicsBody!.categoryBitMask = PhysicsCategory.SpaceShip
-    rocket?.physicsBody!.collisionBitMask = PhysicsCategory.Asteroid
-    rocket?.physicsBody!.contactTestBitMask = PhysicsCategory.Asteroid
-    rocket?.physicsBody!.mass = Mass.SpaceShip
+    displayShip()
     
     scoreNode = self.childNodeWithName("Score")! as! SKLabelNode
     
@@ -86,7 +90,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     asteroids.append( asteroid2 )
     asteroids.append( asteroid3 )
     
-    for _ in 0..<30 {
+    for _ in 0..<10 {
       let tempAsteroid = Asteroid( pos: randomCGPoint(xMax, maxY: yMax))
       asteroids.append(tempAsteroid)
       self.addChild(tempAsteroid)
@@ -107,6 +111,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     self.addChild(myLabel)
     
+    resetShipLivesDisplay()
     /*      var largeRock:SKSpriteNode = SKSpriteNode()
     if let someSpriteNode:SKSpriteNode = self.childNodeWithName("LargeAsteroid") as? SKSpriteNode {
     largeRock = someSpriteNode
@@ -122,8 +127,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // largeRock.runAction(SKAction.repeatActionForever(animatePlayerAction), withKey: "largeRockSpin")
     
     //self.addChild( largeRock)
+  }
+  
+  func displayShip(){
+    rocket = SKSpriteNode(imageNamed: "Spaceship")
+    rocket!.zPosition = 100   // Move to top
+    rocket!.position = CGPoint(x: 0,y: 0)
+    rocket!.setScale( 0.4 )
+    rocket!.physicsBody = SKPhysicsBody(circleOfRadius: rocket!.size.width / 3)
+    rocket!.physicsBody!.allowsRotation = true
+    rocket!.physicsBody!.categoryBitMask = PhysicsCategory.SpaceShip
+    rocket!.physicsBody!.collisionBitMask = PhysicsCategory.None        // Make it invulnerable temporarily
+    rocket!.physicsBody!.contactTestBitMask = PhysicsCategory.None
+    rocket!.physicsBody!.mass = Mass.SpaceShip
     
-    
+    rocket!.runAction( SKAction.sequence(
+      [SKAction.waitForDuration(10.0),
+        SKAction.runBlock({
+          self.rocket!.physicsBody!.collisionBitMask = PhysicsCategory.Asteroid      // Make it vulnerable again
+          self.rocket!.physicsBody!.contactTestBitMask = PhysicsCategory.Asteroid
+        })
+      ]))
+    self.addChild( rocket! )
   }
   
   func rotateRocket(gesture: UIRotationGestureRecognizer) {
@@ -145,6 +170,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let phaserShot = SKSpriteNode(imageNamed: "phaserShot")
     phaserShot.name = "phaserShot"
     phaserShot.zRotation = rocket!.zRotation
+    phaserShot.xScale = 0.1
+    phaserShot.yScale = 0.1
+    
     phaserShot.position = CGPointMake(rocket!.position.x, rocket!.position.y)
     
     let xDist = (cos(phaserShot.zRotation + ninetyDegreesInRadians) * 1000 ) + phaserShot.position.x
@@ -179,10 +207,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     self.addChild(asteroid)
   }
   
+  func finishGame(){
+    gameOver = true
+    let goNode = self.childNodeWithName("gameOver") as? SKLabelNode  // add from .sks
+    goNode?.setScale( 0.1 )
+    //   let moveAction = SKAction.moveTo(CGPoint(x: 0,y: 0), duration: 5.0)
+    //   let rotateAction = SKAction.fadeInWithDuration(5.0)
+    let goAction = SKAction(named: "GameOver")!
+    goNode!.runAction( SKAction.sequence([goAction, SKAction.waitForDuration(2), SKAction.removeFromParent()] ))
+  }
+  
   /// Mark: UPDATE
   // UPDATE
   
   override func update(currentTime: NSTimeInterval){
+    if( (Asteroid.count() == 0 || shipLives <= 0 ) && !gameOver){
+      finishGame()
+    }
+    
+    // Move all the asteroids
     for asteroid in asteroids {
       asteroid.move()
     }
@@ -190,10 +233,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     for child in self.children {
       if child.name == "phaserShot" {
         if let child = child as? SKSpriteNode {
-          if( child.position.x > self.scene!.size.width || child.position.x < -self.scene!.size.width){
+          if( child.position.x > xMax || child.position.x < xMin){
             child.removeFromParent()
           }
-          if( child.position.y > self.scene!.size.height || child.position.y < -self.scene!.size.height){
+          if( child.position.y > yMax || child.position.y < yMin){
             child.removeFromParent()
           }
           
@@ -214,10 +257,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
           } else if( child.position.x < xMin ){
             child.position.x = xMax
           }
-          //     } else if( child.name == "asteroidExplode" ){
-          //       child.removeFromParent()
       }
     }
+    
     scoreNode.text = "Score: " + String(score)
   }
   
@@ -234,21 +276,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
           [ asteroidExplosionSound,
             SKAction.waitForDuration(0.5),
             SKAction.fadeAlphaTo(0.0, duration: 0.3),
-            SKAction.removeFromParent()
+            SKAction.removeFromParent(),
+            SKAction.waitForDuration(5.0)
           ]))
     }
     shipLives -= 1
+    resetShipLivesDisplay()
     if( shipLives <= 0 ){
       shipLives = 0
-      gameOver = true
+      finishGame()
     } else {
-      resetShipLivesDisplay()
+      displayShip()
     }
     return burstNode
   }
   
   func resetShipLivesDisplay(){
-    
+    for i in 0..<shipLives {
+      livesNodes[i].hidden = false
+    }
+    for i in shipLives..<maxLives {
+      livesNodes[i].hidden = true
+    }
   }
   
   func didBeginContact(contact: SKPhysicsContact) {
@@ -260,8 +309,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("Something hit the spaceship")
         print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
         // Remove Spaceship and Asteroid
-        contact.bodyB.node?.removeFromParent()
-        contact.bodyA.node?.removeFromParent()
+        //     nodesToRemove.append(contact.bodyA.node! as! SKSpriteNode)
+        //     nodesToRemove.append(contact.bodyB.node! as! SKSpriteNode)
+        contact.bodyA.node!.removeFromParent()
+        contact.bodyB.node!.removeFromParent()
         
         // Add a super explosion
         self.addChild(shipExplode(contact.contactPoint))
@@ -270,10 +321,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Handle a phasershot hitting an asteroid
     if (
-      (contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
-        (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot) ||
-        (contact.bodyA.categoryBitMask == PhysicsCategory.PhaserShot) &&
-        (contact.bodyB.categoryBitMask == PhysicsCategory.Asteroid)
+      ((contact.bodyA.categoryBitMask == PhysicsCategory.Asteroid) &&
+        (contact.bodyB.categoryBitMask == PhysicsCategory.PhaserShot)) ||
+        ((contact.bodyA.categoryBitMask == PhysicsCategory.PhaserShot) &&
+          (contact.bodyB.categoryBitMask == PhysicsCategory.Asteroid))
       ) {
         
         print( "A: \(contact.bodyA.node?.name), B: \(contact.bodyB.node?.name)" )
@@ -334,6 +385,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     for touch in touches {
       _ = touch.locationInNode(self)
       createPhaserShot()
+      if( gameOver ){
+        // Go back to main Play Scene
+        let scene = MainMenu(fileNamed: "MainMenu")
+        scene?.scaleMode = .AspectFill
+        self.view?.presentScene(scene!, transition: SKTransition.doorsOpenHorizontalWithDuration(1))
+      }
       /*let sprite = SKSpriteNode(imageNamed:"a10000")
       
       sprite.xScale = 1.5

@@ -27,12 +27,39 @@ struct Mass {
 }
 
 func randomCGPoint(maxX: CGFloat, maxY: CGFloat ) -> CGPoint {
-  let x = Double(arc4random_uniform(UInt32(maxX))) *
-    Double(arc4random_uniform(1)) * 2.0 - 1.0
-  let y = Double(arc4random_uniform(UInt32(maxY))) *
-    Double(arc4random_uniform(1)) * 2.0 - 1.0
+  var x = Double(arc4random_uniform(UInt32(maxX))) *  Double(arc4random_uniform(1)) * 2.0 - 1.0
+  var y = Double(arc4random_uniform(UInt32(maxY))) *  Double(arc4random_uniform(1)) * 2.0 - 1.0
+  
+  // Keep it out of the center of the screen
+  let range = 300.0
+  if( x >= 0 ){
+    x += range
+  }
+  if( x < 0 ){
+    x -= range
+  }
+  if( y >= 0 ){
+    y += range
+  }
+  if( y < 0 ){
+    y -= range
+  }
   
   print("CGPoint: \(x) : \(y)")
   return CGPoint(x: x, y: y)
+}
+
+
+//  Random with a bias
+
+func dropItem() -> String {
+  var itemArray = [
+    "gun", "gun",                                          // 20% chance
+    "coin", "coin", "coin",                                // 30% chance
+    "nothing", "nothing", "nothing", "nothing", "nothing"  // 50% chance
+  ]
+  
+  return itemArray[ Int(arc4random_uniform(UInt32( itemArray.count ))) ]
+  
 }
 

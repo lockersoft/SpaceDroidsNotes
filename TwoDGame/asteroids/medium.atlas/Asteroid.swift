@@ -14,11 +14,7 @@ class Asteroid: SKSpriteNode {
   var playerAnimation = [SKTexture]()
   var animatePlayerAction = SKAction()
   var pos = CGPoint(x: 0, y: 0)
-  var directions = [
-    (0,1), (0,-1), (1, 0), (-1, 0), (-1, -1), (1, 1), (1, -1),(-1,0), (-1,1),
-    (0,2), (0,-2), (2, 0), (-2, 0), (-2, -2), (2, 2), (2, -2),(-2,0), (-2,2),
-    (0,3), (0,-3), (3, 0), (-3, 0), (-3, -3), (3, 3), (3, -3),(-3,0), (-3,3)
-  ]
+  var directions = [(0,1), (0,-1), (1, 0), (-1, 0), (-1, -1), (1, 1), (1, -1),(-1,0), (-1,1)]
   var chosenDirection = (0,1)
   var asteroidSize : String = "large"
   static var asteroids = [Asteroid]()     // Class level var to store ALL asteroids created.
@@ -46,10 +42,6 @@ class Asteroid: SKSpriteNode {
   
   required init?(coder aDecoder: NSCoder) {
     super.init( coder: aDecoder )
-  }
-  
-  static func count() -> Int  {       // class level function to return number of asteroids left in the array
-    return Asteroid.asteroids.count
   }
   
   func initializeAsteroid(size: String){
